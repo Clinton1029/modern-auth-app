@@ -50,17 +50,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute w-[400px] h-[400px] bg-blue-300/20 dark:bg-blue-500/10 rounded-full blur-3xl top-[-80px] left-[-80px]" />
-      <div className="absolute w-[300px] h-[300px] bg-purple-300/20 dark:bg-purple-500/10 rounded-full blur-3xl bottom-[-80px] right-[-80px]" />
+    <div className="relative flex items-center justify-center min-h-[90vh] bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
+      {/* Glowing Background */}
+      <div className="absolute w-[400px] h-[400px] bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl top-[-100px] left-[-100px]" />
+      <div className="absolute w-[300px] h-[300px] bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl bottom-[-100px] right-[-100px]" />
 
       {/* Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-sm backdrop-blur-xl bg-white/80 dark:bg-gray-900/60 border border-gray-200/40 dark:border-gray-800/40 shadow-xl rounded-2xl p-6 sm:p-7"
+        className="relative z-10 w-full max-w-sm backdrop-blur-xl 
+                   bg-white/90 dark:bg-gray-900/60 
+                   border border-gray-200/40 dark:border-gray-800/40 
+                   shadow-[0_8px_30px_rgba(0,0,0,0.12)] 
+                   hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)] 
+                   hover:-translate-y-1 
+                   transition-all duration-500 
+                   rounded-2xl p-6 sm:p-8"
       >
         {/* Header */}
         <div className="text-center mb-4">
@@ -80,7 +87,7 @@ export default function RegisterPage() {
               type="text"
               placeholder="Full Name"
               {...register("name")}
-              className={`mt-1 w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
+              className={`w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.name
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
@@ -97,7 +104,7 @@ export default function RegisterPage() {
               type="email"
               placeholder="Email"
               {...register("email")}
-              className={`mt-1 w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
+              className={`w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.email
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
@@ -116,7 +123,7 @@ export default function RegisterPage() {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               {...register("password")}
-              className={`mt-1 w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
+              className={`w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.password
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
@@ -162,7 +169,7 @@ export default function RegisterPage() {
               type={showConfirm ? "text" : "password"}
               placeholder="Confirm Password"
               {...register("confirmPassword")}
-              className={`mt-1 w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
+              className={`w-full px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.confirmPassword
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
@@ -188,7 +195,7 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
-            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
