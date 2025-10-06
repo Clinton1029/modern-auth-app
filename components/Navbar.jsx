@@ -11,21 +11,17 @@ export default function Navbar() {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Temporary mock user (replace with NextAuth later)
-  const user = null;
-  // const user = { name: "Clinton", avatar: "/avatar.png" };
+  // Mock authentication: switch between `null` (logged out) and a user object (logged in)
+  const [user, setUser] = useState(null); // change to {name:'Clinton', avatar:'/avatar.png'} to simulate logged in
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 20);
 
-      // Hide navbar on scroll down, show on scroll up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
+      if (currentScrollY > lastScrollY && currentScrollY > 100) setVisible(false);
+      else setVisible(true);
+
       setLastScrollY(currentScrollY);
     };
 
@@ -53,7 +49,7 @@ export default function Navbar() {
           ModernAuth
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/"
@@ -72,15 +68,18 @@ export default function Navbar() {
             <div className="flex items-center gap-3 bg-gradient-to-r from-gray-100/60 to-gray-200/40 dark:from-gray-800/40 dark:to-gray-900/50 border border-gray-200/30 dark:border-gray-700/30 rounded-full px-3 py-1 shadow-sm hover:shadow-md transition-all">
               <motion.img
                 whileHover={{ scale: 1.1, rotate: 2 }}
-                src={user.avatar || "/avatar.png"}
+                src={user.avatar}
                 alt="avatar"
                 className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 object-cover"
               />
               <span className="font-medium text-gray-800 dark:text-gray-200">
                 {user.name}
               </span>
-              <button className="p-1 hover:text-red-500 transition">
-                <LogOut size={18} />
+              <button
+                className="flex items-center gap-1 text-red-500 hover:text-red-600 transition"
+                onClick={() => setUser(null)}
+              >
+                <LogOut size={18} /> <span className="text-sm">Logout</span>
               </button>
             </div>
           ) : (
@@ -128,6 +127,7 @@ export default function Navbar() {
               >
                 Home
               </Link>
+
               <Link
                 href="/dashboard"
                 className="text-gray-800 dark:text-gray-100 text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
@@ -139,14 +139,17 @@ export default function Navbar() {
               {user ? (
                 <div className="flex flex-col items-center gap-2">
                   <img
-                    src={user.avatar || "/avatar.png"}
+                    src={user.avatar}
                     alt="avatar"
                     className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
                   />
                   <span className="font-medium text-gray-800 dark:text-gray-200">
                     {user.name}
                   </span>
-                  <button className="flex items-center gap-2 text-sm text-red-500 font-semibold mt-2">
+                  <button
+                    onClick={() => setUser(null)}
+                    className="flex items-center gap-2 text-sm text-red-500 font-semibold mt-2"
+                  >
                     <LogOut size={16} /> Logout
                   </button>
                 </div>
