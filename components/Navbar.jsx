@@ -11,17 +11,14 @@ export default function Navbar() {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Mock authentication: switch between `null` (logged out) and a user object (logged in)
-  const [user, setUser] = useState(null); // change to {name:'Clinton', avatar:'/avatar.png'} to simulate logged in
+  // Mock authentication: null = logged out, user object = logged in
+  const [user, setUser] = useState(null); // toggle to simulate login
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 20);
-
-      if (currentScrollY > lastScrollY && currentScrollY > 100) setVisible(false);
-      else setVisible(true);
-
+      setVisible(!(currentScrollY > lastScrollY && currentScrollY > 100));
       setLastScrollY(currentScrollY);
     };
 
@@ -73,7 +70,7 @@ export default function Navbar() {
                 className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 object-cover"
               />
               <span className="font-medium text-gray-800 dark:text-gray-200">
-                {user.name}
+                Welcome Back, {user.name}
               </span>
               <button
                 className="flex items-center gap-1 text-red-500 hover:text-red-600 transition"
@@ -144,7 +141,7 @@ export default function Navbar() {
                     className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
                   />
                   <span className="font-medium text-gray-800 dark:text-gray-200">
-                    {user.name}
+                    Welcome Back, {user.name}
                   </span>
                   <button
                     onClick={() => setUser(null)}
@@ -154,17 +151,17 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-3">
+                <div className="flex flex-col items-center gap-3 w-full">
                   <Link
                     href="/login"
-                    className="w-32 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-md transition"
+                    className="w-32 mx-auto py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-md transition"
                     onClick={() => setIsOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
-                    className="w-32 py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition"
+                    className="w-32 mx-auto py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition"
                     onClick={() => setIsOpen(false)}
                   >
                     Register
