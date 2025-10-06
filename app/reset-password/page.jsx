@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, CheckCircle2, Lock } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -9,10 +9,23 @@ import Link from "next/link";
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [strength, setStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
+
+  // ✅ Password Strength Checker
+  useEffect(() => {
+    const calculateStrength = (value) => {
+      if (value.length < 6) return "Weak";
+      if (/[A-Z]/.test(value) && /[0-9]/.test(value) && /[^A-Za-z0-9]/.test(value))
+        return "Strong";
+      if (/[A-Z]/.test(value) || /[0-9]/.test(value)) return "Medium";
+      return "Weak";
+    };
+    setStrength(calculateStrength(password));
+  }, [password]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +49,13 @@ export default function ResetPassword() {
         colors: ["#3b82f6", "#8b5cf6", "#22c55e", "#a855f7"],
       });
     }, 1500);
+  };
+
+  const getStrengthColor = () => {
+    if (strength === "Weak") return "text-red-500";
+    if (strength === "Medium") return "text-yellow-500";
+    if (strength === "Strong") return "text-green-500";
+    return "text-gray-400";
   };
 
   return (
@@ -88,6 +108,13 @@ export default function ResetPassword() {
               </button>
               <Lock className="absolute left-3 top-2.5 text-gray-400" size={16} />
             </div>
+
+            {/* Strength Meter */}
+            {password && (
+              <p className={`text-xs font-medium mt-1 ${getStrengthColor()}`}>
+                Password Strength: {strength}
+              </p>
+            )}
 
             {/* Confirm Password */}
             <div className="relative">
