@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Loader2, CheckCircle2 } from "lucide-react";
+import confetti from "canvas-confetti";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -14,11 +15,21 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate sending reset email
+    // Simulate API request
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
+      launchConfetti();
     }, 1800);
+  };
+
+  const launchConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#6366f1", "#8b5cf6", "#3b82f6", "#a855f7", "#22c55e"],
+    });
   };
 
   return (
