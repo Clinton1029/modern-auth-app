@@ -10,14 +10,14 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Name is required"),
-    email: z.string().email("Enter a valid email"),
+    name: z.string().min(2, "Full name is required"),
+    email: z.string().email("Enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm your password"),
+    confirmPassword: z.string().min(6, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
     message: "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
 export default function RegisterPage() {
@@ -46,45 +46,49 @@ export default function RegisterPage() {
   }, [passwordValue]);
 
   const onSubmit = async (data) => {
-    console.log("Register Data:", data);
+    console.log("Registration data:", data);
+    // will connect to backend later
   };
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
-      {/* background blur glow */}
-      <div className="absolute w-[400px] h-[400px] bg-blue-300/20 dark:bg-blue-500/10 rounded-full blur-3xl top-[-100px] left-[-100px]" />
+      {/* background glow */}
+      <div className="absolute w-[500px] h-[500px] bg-blue-300/20 dark:bg-blue-500/10 rounded-full blur-3xl top-[-100px] left-[-100px]" />
       <div className="absolute w-[400px] h-[400px] bg-purple-300/20 dark:bg-purple-500/10 rounded-full blur-3xl bottom-[-100px] right-[-100px]" />
 
-      {/* Form Card */}
+      {/* Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+        initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-sm sm:max-w-xs backdrop-blur-xl bg-white/80 dark:bg-gray-900/60 border border-gray-200/40 dark:border-gray-800/40 shadow-xl rounded-2xl p-6"
+        className="relative z-10 w-full max-w-sm backdrop-blur-xl bg-white/80 dark:bg-gray-900/60 border border-gray-200/40 dark:border-gray-800/40 shadow-xl rounded-2xl p-6 sm:p-8"
       >
         {/* Header */}
-        <div className="text-center mb-5">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Create Account
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-            Join us and start your journey
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+            Join and start your journey
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Name */}
           <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Full Name
+            </label>
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder="John Doe"
               {...register("name")}
-              className={`w-full px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 border ${
+              className={`mt-1 w-full px-4 py-2.5 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.name
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
-              } text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
+              } text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
             />
             {errors.name && (
               <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
@@ -93,15 +97,18 @@ export default function RegisterPage() {
 
           {/* Email */}
           <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Email
+            </label>
             <input
               type="email"
-              placeholder="Email Address"
+              placeholder="you@example.com"
               {...register("email")}
-              className={`w-full px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 border ${
+              className={`mt-1 w-full px-4 py-2.5 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.email
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
-              } text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
+              } text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
             />
             {errors.email && (
               <p className="text-xs text-red-500 mt-1">
@@ -112,22 +119,25 @@ export default function RegisterPage() {
 
           {/* Password */}
           <div className="relative">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Password
+            </label>
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder="Enter password"
               {...register("password")}
-              className={`w-full px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 border ${
+              className={`mt-1 w-full px-4 py-2.5 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.password
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
-              } text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
+              } text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
             >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
             {errors.password && (
               <p className="text-xs text-red-500 mt-1">
@@ -135,7 +145,7 @@ export default function RegisterPage() {
               </p>
             )}
 
-            {/* Strength bar */}
+            {/* Password strength bar */}
             <div className="mt-1 h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
@@ -158,22 +168,25 @@ export default function RegisterPage() {
 
           {/* Confirm Password */}
           <div className="relative">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Confirm Password
+            </label>
             <input
               type={showConfirm ? "text" : "password"}
-              placeholder="Confirm Password"
+              placeholder="Re-enter password"
               {...register("confirmPassword")}
-              className={`w-full px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 border ${
+              className={`mt-1 w-full px-4 py-2.5 rounded-lg bg-white/80 dark:bg-gray-800/60 border ${
                 errors.confirmPassword
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-700 focus:ring-blue-500"
-              } text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
+              } text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 transition`}
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
             >
-              {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
             {errors.confirmPassword && (
               <p className="text-xs text-red-500 mt-1">
@@ -188,7 +201,7 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
-            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:shadow-md transition disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
@@ -201,40 +214,40 @@ export default function RegisterPage() {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center justify-center mt-4 gap-2">
+        <div className="flex items-center justify-center mt-6 gap-2">
           <div className="h-px bg-gray-300 dark:bg-gray-700 w-1/5"></div>
           <span className="text-gray-500 dark:text-gray-400 text-xs">or</span>
           <div className="h-px bg-gray-300 dark:bg-gray-700 w-1/5"></div>
         </div>
 
         {/* OAuth */}
-        <div className="mt-3 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <motion.button
             whileHover={{ scale: 1.02 }}
-            className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
           >
             <img
               src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
               alt="Google"
               className="w-4 h-4"
             />
-            Sign up with Google
+            Google
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }}
-            className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
           >
             <img
               src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
               alt="GitHub"
               className="w-4 h-4"
             />
-            Sign up with GitHub
+            GitHub
           </motion.button>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-gray-600 dark:text-gray-400 text-xs mt-4">
+        <p className="text-center text-gray-600 dark:text-gray-400 text-xs mt-5">
           Already have an account?{" "}
           <Link
             href="/login"
