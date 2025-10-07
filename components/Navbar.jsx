@@ -12,7 +12,7 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   // Mock authentication: null = logged out, user object = logged in
-  const [user, setUser] = useState(null); // toggle to simulate login
+  const [user, setUser] = useState(null); // set to { name: "Clinton", avatar: "/avatar.png" } to simulate login
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,10 +113,10 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden backdrop-blur-xl bg-white/90 dark:bg-gray-900/80 shadow-lg border-t border-gray-200/20 dark:border-gray-800/30"
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="md:hidden backdrop-blur-xl bg-white/90 dark:bg-gray-900/80 shadow-xl border-t border-gray-200/20 dark:border-gray-800/30"
           >
-            <div className="flex flex-col items-center gap-5 py-6">
+            <div className="flex flex-col items-center gap-6 py-8 px-4">
               <Link
                 href="/"
                 className="text-gray-800 dark:text-gray-100 text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
@@ -134,39 +134,47 @@ export default function Navbar() {
               </Link>
 
               {user ? (
-                <div className="flex flex-col items-center gap-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center gap-3 w-full"
+                >
                   <img
                     src={user.avatar}
                     alt="avatar"
-                    className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
+                    className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-700 object-cover"
                   />
-                  <span className="font-medium text-gray-800 dark:text-gray-200">
+                  <span className="font-medium text-gray-800 dark:text-gray-200 text-center">
                     Welcome Back, {user.name}
                   </span>
                   <button
                     onClick={() => setUser(null)}
-                    className="flex items-center gap-2 text-sm text-red-500 font-semibold mt-2"
+                    className="w-40 flex justify-center items-center gap-2 py-2 text-sm text-red-500 font-semibold rounded-xl border border-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition"
                   >
                     <LogOut size={16} /> Logout
                   </button>
-                </div>
+                </motion.div>
               ) : (
-                <div className="flex flex-col items-center gap-3 w-full">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center gap-4 w-full"
+                >
                   <Link
                     href="/login"
-                    className="w-32 mx-auto py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-md transition"
+                    className="w-full max-w-xs mx-auto py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-center"
                     onClick={() => setIsOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
-                    className="w-32 mx-auto py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition"
+                    className="w-full max-w-xs mx-auto py-3 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 text-center"
                     onClick={() => setIsOpen(false)}
                   >
                     Register
                   </Link>
-                </div>
+                </motion.div>
               )}
             </div>
           </motion.div>
