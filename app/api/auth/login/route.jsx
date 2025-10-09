@@ -13,7 +13,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
-    // ✅ 2. Check if user exists
+    // ✅ 2. Find user
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
@@ -21,7 +21,10 @@ export async function POST(request) {
 
     // ✅ 3. Check if email is verified
     if (!user.emailVerified) {
-      return NextResponse.json({ error: "Please verify your email before logging in." }, { status: 403 });
+      return NextResponse.json(
+        { error: "Please verify your email before logging in." },
+        { status: 403 }
+      );
     }
 
     // ✅ 4. Compare password
@@ -37,8 +40,8 @@ export async function POST(request) {
       { expiresIn: "7d" }
     );
 
-    // ✅ 6. Return success response with token
-    return NextResponse.json(
+    // ✅ 6. Store token in cookie
+    const response = NextResponse.json(
       {
         message: "Login successful.",
         user: {
@@ -48,9 +51,24 @@ export async function POST(request) {
           role: user.role,
         },
         token,
+        redirectUrl:
+          user.role === "admin"
+            ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
+            : `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard`,
       },
       { status: 200 }
     );
+
+    response.cookies.set({
+      name: "token",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (error) {
     console.error("❌ Login error:", error);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
