@@ -9,7 +9,7 @@ export async function POST(request) {
     const body = await request.json();
     const { name, email, password, role = "user" } = body;
 
-    // 1️⃣ Validate inputs
+    // ✅ 1. Validate inputs
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required." },
@@ -17,79 +17,73 @@ export async function POST(request) {
       );
     }
 
-    // 2️⃣ Check if user exists
+    // ✅ 2. Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: "User already exists." }, { status: 409 });
     }
 
-    // 3️⃣ Hash password and create user
+    // ✅ 3. Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword, role },
     });
 
-    // 4️⃣ Create verification token (valid for 24 hours)
+    // ✅ 4. Create verification token (valid 24 hours)
     const token = randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 1000 * 60 * 60 * 24);
-
     await prisma.verificationToken.create({
       data: { identifier: email, token, expires },
     });
 
-    // 5️⃣ Load Gmail credentials
+    // ✅ 5. Load Mailtrap credentials
     const emailUser = process.env.EMAIL_USER;
     const emailPass = process.env.EMAIL_PASS;
+    const emailHost = process.env.EMAIL_HOST;
+    const emailPort = Number(process.env.EMAIL_PORT);
 
-    if (!emailUser || !emailPass) {
-      console.error("Missing EMAIL_USER or EMAIL_PASS in environment.");
+    if (!emailUser || !emailPass || !emailHost || !emailPort) {
+      console.error("❌ Missing Mailtrap environment variables");
       return NextResponse.json(
         { error: "Server configuration error." },
         { status: 500 }
       );
     }
 
-    // 6️⃣ Setup Nodemailer transporter
+    // ✅ 6. Setup Nodemailer with Mailtrap
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // STARTTLS
+      host: emailHost,
+      port: emailPort,
       auth: { user: emailUser, pass: emailPass },
     });
 
-    // 7️⃣ Verification email link
+    // ✅ 7. Create verification link
     const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
 
-    // 8️⃣ Email content
+    // ✅ 8. Compose email
     const mailOptionsToUser = {
-      from: emailUser,
+      from: `"Support Team" <no-reply@example.com>`,
       to: email,
       subject: "Verify Your Email Address",
       html: `
         <h3>Hello ${name || "User"},</h3>
-        <p>Thank you for registering on our platform!</p>
-        <p>Please confirm your email address by clicking the button below:</p>
-        <a href="${verifyUrl}"
-           style="display:inline-block;background:#2563eb;color:white;
-                  padding:10px 16px;border-radius:6px;text-decoration:none;">
-          Verify Email
-        </a>
-        <p>If the button doesn't work, copy and paste this link in your browser:</p>
+        <p>Thanks for registering!</p>
+        <p>Please confirm your email by clicking below:</p>
+        <a href="${verifyUrl}" style="background:#2563eb;color:white;padding:10px 16px;border-radius:6px;text-decoration:none;">Verify Email</a>
+        <p>If that doesn't work, paste this link in your browser:</p>
         <p>${verifyUrl}</p>
-        <hr/>
-        <small>This link expires in 24 hours.</small>
       `,
     };
 
-    // 9️⃣ Send verification email
+    // ✅ 9. Send the email
     await transporter.sendMail(mailOptionsToUser);
 
     return NextResponse.json(
-      { message: "User registered successfully. Verification email sent." },
+      { message: "User registered successfully. Verification email sent (via Mailtrap)." },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error in registration route:", error);
+    console.error("❌ Error in registration route:", error);
     return NextResponse.json(
       { error: "Internal server error.", details: error.message },
       { status: 500 }

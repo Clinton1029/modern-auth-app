@@ -24,6 +24,8 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [strength, setStrength] = useState(0);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const {
     register,
@@ -45,13 +47,39 @@ export default function RegisterPage() {
     setStrength(score);
   }, [passwordValue]);
 
+  // 🧩 Handle form submission
   const onSubmit = async (data) => {
-    console.log("Registration data:", data);
+    setMessage("");
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result.error || "Registration failed. Try again.");
+        return;
+      }
+
+      setMessage("✅ Registration successful! Check your email for verification.");
+    } catch (err) {
+      console.error("Registration error:", err);
+      setError("Something went wrong. Please try again later.");
+    }
   };
 
   return (
     <div className="relative flex items-center justify-center min-h-[90vh] bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
-      {/* Glowing Background */}
+      {/* Background glows */}
       <div className="absolute w-[400px] h-[400px] bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl top-[-100px] left-[-100px]" />
       <div className="absolute w-[300px] h-[300px] bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl bottom-[-100px] right-[-100px]" />
 
@@ -64,9 +92,6 @@ export default function RegisterPage() {
                    bg-white/90 dark:bg-gray-900/60 
                    border border-gray-200/40 dark:border-gray-800/40 
                    shadow-[0_8px_30px_rgba(0,0,0,0.12)] 
-                   hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)] 
-                   hover:-translate-y-1 
-                   transition-all duration-500 
                    rounded-2xl p-6 sm:p-8"
       >
         {/* Header */}
@@ -136,13 +161,8 @@ export default function RegisterPage() {
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password.message}
-              </p>
-            )}
 
-            {/* Strength bar */}
+            {/* Strength Bar */}
             <div className="mt-1 h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
@@ -161,6 +181,12 @@ export default function RegisterPage() {
                 className="h-full"
               />
             </div>
+
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -207,31 +233,13 @@ export default function RegisterPage() {
           </motion.button>
         </form>
 
-        {/* OAuth */}
-        <div className="mt-4 flex gap-2">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
-          >
-            <img
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
-              alt="Google"
-              className="w-4 h-4"
-            />
-            Google
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
-          >
-            <img
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
-              alt="GitHub"
-              className="w-4 h-4"
-            />
-            GitHub
-          </motion.button>
-        </div>
+        {/* Feedback Messages */}
+        {message && (
+          <p className="mt-3 text-sm text-green-600 text-center">{message}</p>
+        )}
+        {error && (
+          <p className="mt-3 text-sm text-red-600 text-center">{error}</p>
+        )}
 
         {/* Footer */}
         <p className="text-center text-gray-600 dark:text-gray-400 text-xs mt-4">
