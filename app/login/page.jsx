@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react"; // 👈 import next-auth signIn
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -44,20 +45,28 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Save JWT locally (or use cookies if preferred)
+      // ✅ Save JWT locally
       localStorage.setItem("token", result.token);
 
       setSuccessMessage("Login successful! Redirecting...");
 
-      // ✅ Redirect to correct dashboard based on user role
+      // ✅ Redirect based on user role
       setTimeout(() => {
-        window.location.href = result.redirectUrl || "/user-dashboard";
+        if (result.user.role === "admin") {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/user-dashboard";
+        }
       }, 1500);
     } catch (error) {
       console.error("Login error:", error);
       setErrorMessage("Something went wrong. Please try again.");
     }
   };
+
+  // ✅ OAuth login handlers
+  const handleGoogleLogin = () => signIn("google", { callbackUrl: "/user-dashboard" });
+  const handleGitHubLogin = () => signIn("github", { callbackUrl: "/user-dashboard" });
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
@@ -187,6 +196,7 @@ export default function LoginPage() {
         <div className="mt-4 flex gap-2">
           <motion.button
             whileHover={{ scale: 1.02 }}
+            onClick={handleGoogleLogin}
             className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
           >
             <img
@@ -198,6 +208,7 @@ export default function LoginPage() {
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }}
+            onClick={handleGitHubLogin}
             className="flex-1 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 py-2 rounded-lg bg-white/70 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-200 text-sm font-medium"
           >
             <img
