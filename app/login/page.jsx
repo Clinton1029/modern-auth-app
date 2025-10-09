@@ -44,12 +44,14 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Save JWT to localStorage (you can use cookies if you prefer)
+      // ✅ Save JWT locally (or use cookies if preferred)
       localStorage.setItem("token", result.token);
 
       setSuccessMessage("Login successful! Redirecting...");
+
+      // ✅ Redirect to correct dashboard based on user role
       setTimeout(() => {
-        window.location.href = "/dashboard"; // redirect after login
+        window.location.href = result.redirectUrl || "/user-dashboard";
       }, 1500);
     } catch (error) {
       console.error("Login error:", error);
@@ -59,11 +61,11 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 overflow-hidden">
-      {/* Subtle Background Glow */}
+      {/* Background Glow */}
       <div className="absolute w-[450px] h-[450px] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl top-[-100px] left-[-100px]" />
       <div className="absolute w-[350px] h-[350px] bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl bottom-[-100px] right-[-100px]" />
 
-      {/* Premium Floating Card */}
+      {/* Floating Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -77,7 +79,6 @@ export default function LoginPage() {
                    transition-all duration-500 
                    rounded-2xl p-6 sm:p-8"
       >
-        {/* Decorative Gradient Glow */}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 blur-2xl -z-10" />
 
         {/* Header */}
@@ -157,7 +158,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Login Button */}
+          {/* Submit */}
           <motion.button
             type="submit"
             disabled={isSubmitting}
