@@ -1,60 +1,58 @@
-import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-export async function GET(req) {
+export async function GET(request) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
     const email = searchParams.get("email");
 
+    // ✅ Validate query params
     if (!token || !email) {
       return NextResponse.json(
-        { error: "Invalid verification link" },
+        { error: "Missing token or email." },
         { status: 400 }
       );
     }
 
-    // 🔹 Find the token in database
-    const record = await prisma.verificationToken.findUnique({
+    // ✅ Find verification token in database
+    const verificationToken = await prisma.verificationToken.findUnique({
       where: { token },
     });
 
-    if (!record) {
+    if (!verificationToken || verificationToken.identifier !== email) {
       return NextResponse.json(
-        { error: "Verification token not found or already used" },
-        { status: 404 }
-      );
-    }
-
-    // 🔹 Ensure token matches email and isn’t expired
-    if (record.identifier !== email || record.expires < new Date()) {
-      return NextResponse.json(
-        { error: "Token invalid or expired" },
+        { error: "Invalid or expired verification link." },
         { status: 400 }
       );
     }
 
-    // 🔹 Mark user as verified
+    // ✅ Check if token expired
+    if (verificationToken.expires < new Date()) {
+      await prisma.verificationToken.delete({ where: { token } });
+      return NextResponse.json(
+        { error: "Verification link has expired." },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Update user as verified
     await prisma.user.update({
       where: { email },
       data: { emailVerified: new Date() },
     });
 
-    // 🔹 Delete the used token
-    await prisma.verificationToken.delete({
-      where: { token },
-    });
+    // ✅ Delete token after verification
+    await prisma.verificationToken.delete({ where: { token } });
 
-    // 🔹 Option 1: Redirect user to a success page
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/login?verified=true`);
-
-    // 🔹 Option 2: If you want to return JSON instead, use this instead:
-    // return NextResponse.json({ message: "Email verified successfully!" });
-
+    // ✅ Redirect user to success page
+    return NextResponse.redirect(
+      `${process.env.NEXT_PUBLIC_APP_URL}/verified-success`
+    );
   } catch (error) {
-    console.error("Verification error:", error);
+    console.error("❌ Error in verify route:", error);
     return NextResponse.json(
-      { error: "Server error during verification", details: error.message },
+      { error: "Internal server error." },
       { status: 500 }
     );
   }
