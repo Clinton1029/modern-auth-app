@@ -15,6 +15,8 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     register,
@@ -25,7 +27,34 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
-    console.log("Login Data:", data);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(result.error || "Login failed.");
+        return;
+      }
+
+      // ✅ Save JWT to localStorage (you can use cookies if you prefer)
+      localStorage.setItem("token", result.token);
+
+      setSuccessMessage("Login successful! Redirecting...");
+      setTimeout(() => {
+        window.location.href = "/dashboard"; // redirect after login
+      }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMessage("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -48,7 +77,7 @@ export default function LoginPage() {
                    transition-all duration-500 
                    rounded-2xl p-6 sm:p-8"
       >
-        {/* Decorative Gradient Glow Around Card */}
+        {/* Decorative Gradient Glow */}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 blur-2xl -z-10" />
 
         {/* Header */}
@@ -60,6 +89,18 @@ export default function LoginPage() {
             Sign in to your account
           </p>
         </div>
+
+        {/* Alerts */}
+        {errorMessage && (
+          <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-md mb-3 text-center">
+            {errorMessage}
+          </p>
+        )}
+        {successMessage && (
+          <p className="text-sm text-green-600 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-md mb-3 text-center">
+            {successMessage}
+          </p>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
